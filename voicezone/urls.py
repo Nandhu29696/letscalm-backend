@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AudioFileUploadView, PlayAudioView, EditAudioView, GetAllAudioFilesView, DeleteAudioView
+from .views import AudioFileUploadView, PlayAudioView, EditAudioView, GetAllAudioFilesView, DeleteAudioView, TranscriptionAPIView
 
 urlpatterns = [
     path('upload-audio', AudioFileUploadView.as_view(), name='upload-audio'),
@@ -7,4 +7,6 @@ urlpatterns = [
     path('audio/edit/<audio_id>', EditAudioView.as_view(), name='audio-edit'),
     path('audio/all/<user_id>', GetAllAudioFilesView.as_view(), name='get_all_audio_files'),
     path('audio/delete/<audio_id>', DeleteAudioView.as_view(), name='get_all_audio_files'),
+    path('transcribe', TranscriptionAPIView.as_view(), name='transcribe'),
+
 ]

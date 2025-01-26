@@ -45,3 +45,11 @@ class VideoFile(models.Model):
 
     def __str__(self):
         return f"Video: {self.title} - {self.video_type}"
+    
+
+class VoiceToText(models.Model):
+    file = models.FileField(upload_to='audio_files/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file.name

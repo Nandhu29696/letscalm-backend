@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from .models import AudioFile
-from voicezone.utils import upload_to_s3  # Import the utility function
+from voicezone.utils import upload_to_local  # Import the utility function
 
 class AudioFileUploadSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
@@ -17,7 +17,7 @@ class AudioFileUploadSerializer(serializers.Serializer):
         file = validated_data['file']
         created_by = self.context['request'].user
         # Upload file to S3 and get the file URL and name
-        file_url, file_name = upload_to_s3(file)
+        file_url, file_name = upload_to_local(file)
 
         if file_url is None:
             raise serializers.ValidationError("Failed to upload file to S3")
