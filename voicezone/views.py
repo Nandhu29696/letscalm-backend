@@ -152,11 +152,11 @@ class TranscriptionAPIView(APIView):
         file = request.FILES['file']
         audio_file = VoiceToText.objects.create(file=file)
         return Response({"message": "File saved"}, status=status.HTTP_200_OK)    
-        # try:
-        #     file_path = audio_file.file.path
-        #     transcription = speech_to_text(file_path, 'en-US') 
-        #     print('transcription: ',transcription)
-        #     return Response({"transcription": transcription}, status=status.HTTP_200_OK)
-        # except Exception as e:
-        #     print('Error:', e) 
-        #     return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            file_path = audio_file.file.path
+            transcription = speech_to_text(file_path, 'en-US') 
+            print('transcription: ',transcription)
+            return Response({"transcription": transcription}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print('Error:', e) 
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

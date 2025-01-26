@@ -15,8 +15,6 @@ from mutagen import File
 ALLOWED_EXTENSIONS_AUDIO = ['mp3', 'wav', 'aac']
 ALLOWED_EXTENSIONS_VIDEO = ['mp4', 'mkv', 'avi']
 
-# aai.settings.api_key = "17fd74a864f0411fa70c349b1ba66d8b"
-
 def is_allowed_file(file_name, allowed_extensions):
     """Check if the file has an allowed extension."""
     extension = file_name.split('.')[-1].lower()
@@ -58,28 +56,14 @@ def is_allowed_file(file_name, allowed_extensions):
 #         print(f"Error uploading to S3: {str(e)}")
 #         return None, None
 
-
-# def transcribe_audio(file_path):
-#     # Upload the file to AssemblyAI
-#     transcriber = aai.Transcriber()
-#     transcript = transcriber.transcribe(file_path)
-
-#     if transcript.status == aai.TranscriptStatus.error:
-#         return transcript.error
-#     else:
-#         print(transcript.text)
-#         return transcript.text
-
 def upload_to_local(file):
-    # Define the base directory for local storage
     base_dir = os.path.join(os.getcwd(), "local_storage")
-    os.makedirs(base_dir, exist_ok=True)  # Create the directory if it doesn't exist
-
-    # Determine the folder based on the file extension
+    os.makedirs(base_dir, exist_ok=True) 
+    
     file_extension = file.name.split('.')[-1].lower()
-    if file_extension in ['mp3', 'wav', 'aac']:  # Allowed audio extensions
+    if file_extension in ['mp3', 'wav', 'aac']:  
         folder = 'audio'
-    elif file_extension in ['mp4', 'avi', 'mov']:  # Allowed video extensions
+    elif file_extension in ['mp4', 'avi', 'mov']:
         folder = 'video'
     else:
         raise ValueError("Unsupported file type")
@@ -103,9 +87,6 @@ def upload_to_local(file):
         return None, None
 
 def get_file_format(file_path: str) -> str:
-    """
-    Determines the actual format of the file using mutagen.
-    """
     try:
         audio_file = File(file_path)
         if audio_file is None:
@@ -116,9 +97,6 @@ def get_file_format(file_path: str) -> str:
         raise
     
 def convert_to_wav(file_path: str, output_path: str) -> str:
-    """
-    Converts any audio file to a valid WAV format.
-    """
     try:
         data, samplerate = sf.read(file_path)
         sf.write(output_path, data, samplerate, format='WAV', subtype='PCM_16')
@@ -128,9 +106,6 @@ def convert_to_wav(file_path: str, output_path: str) -> str:
         raise ValueError("File conversion to WAV failed.")
 
 def validate_wav_file(file_path: str) -> bool:
-    """
-    Validates if a WAV file is PCM-encoded and properly formatted.
-    """
     try:
         with wave.open(file_path, 'rb') as wav_file:
             if wav_file.getsampwidth() != 2:  # 16-bit PCM
@@ -144,9 +119,6 @@ def validate_wav_file(file_path: str) -> bool:
         return False
     
 def prepare_voice_file(file_path: str) -> str:
-    """
-    Ensures the file is a valid PCM WAV. Converts if necessary.
-    """
     try:
         # Detect file format
         file_format = get_file_format(file_path)
@@ -165,9 +137,6 @@ def prepare_voice_file(file_path: str) -> str:
 
 
 def transcribe_audio(audio_data, language: str) -> str:
-    """
-    Transcribes audio data to text using Google's speech recognition API.
-    """
     r = sr.Recognizer()
     text = r.recognize_google(audio_data, language=language)
     return text
