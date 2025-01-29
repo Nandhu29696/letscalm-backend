@@ -1,1 +1,15 @@
+#setup environment in local machine
+pip install virtualenvwrapper-win
+mkvirtualenv env
+
+#active & deactive env
+workon env
+deactive
+
+#Install nessery tools
+pip install -r requirement.txt
 python manage.py runserver 0.0.0.0:8000
+
+#create database tables
+python manage.py makemigrations
+python manage.py migrate

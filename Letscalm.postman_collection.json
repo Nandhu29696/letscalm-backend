@@ -1,0 +1,552 @@
+{
+	"info": {
+		"_postman_id": "b10da29a-baaa-460b-bf25-57ee9a71acaa",
+		"name": "Letscalm",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12112172",
+		"_collection_link": "https://bold-equinox-668403.postman.co/workspace/My-Workspace~b329a766-c98a-4747-8915-89eb8994b8f9/collection/12112172-b10da29a-baaa-460b-bf25-57ee9a71acaa?action=share&source=collection_link&creator=12112172"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"nandhu29696@gmail.com\",\r\n    \"name\":\"banner\",\r\n    \"password\":\"pass123\",\r\n    \"password2\":\"pass123\",\r\n    \"tc\":\"True\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/user/register",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"nandhu29696@gmail.com\",\r\n    \"password\": \"pass123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.0.135:8000/api/user/login",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"135"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MDg0NDU2LCJpYXQiOjE3MzcwODMyNTYsImp0aSI6Ijk5YTc5ODIwOTI5NTQ5ODNhZWM1OTkzYTA3N2RhNjMyIiwidXNlcl9pZCI6Mn0.p2bt3Fn3cOTEf0nz960DH71OgcO61zmo6mObRDb0rB8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"pass123\",\r\n    \"password2\": \"pass123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/user/changePassword",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MDQ5OTY0LCJpYXQiOjE3MzcwNDg3NjQsImp0aSI6IjM4ZjM1YzQ3OGI3NTQ2NmM4MGY5NDU5ZGU4YjZkZjYzIiwidXNlcl9pZCI6Mn0._HVRHjqIwISj3ORC76JK0ixd_2JJbLoemflQvpl8_Sw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/user/profile",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send OTP to verify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"nandhu29696@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/user/send-otp",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"send-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset User Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"pass12\",\r\n    \"password2\": \"pass12\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/user/reset-password/MQ/cjros4-3515b2f5cae41d5c410aa1a7029baf1d",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"reset-password",
+								"MQ",
+								"cjros4-3515b2f5cae41d5c410aa1a7029baf1d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"nandhu29696@gmail.com\",\r\n    \"otp\":\"580899\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/user/verify-otp",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"verify-otp"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Voice Handler",
+			"item": [
+				{
+					"name": "Create Audio",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NTk5OTUyLCJpYXQiOjE3Mzc1OTg3NTIsImp0aSI6ImFhOWQ3YzVkYjVmZTRjZmI4ZDRiMTEyOTkyMmYyNDhjIiwidXNlcl9pZCI6OH0.XsbZXRQbJ0bHUuJrkjNAAhJ2UnLCYqgqtYS-3sCqqag",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Sample Audio",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a sample audio file",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/nandh/Downloads/sample-12s.mp3"
+								},
+								{
+									"key": "audio_type",
+									"value": "mp3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/upload-audio",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"upload-audio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Audio",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MTkyMzA5LCJpYXQiOjE3MzcxOTExMDksImp0aSI6ImNiMGNmYmM2NjUxOTQ2ZGRhOTJiZWVmYTVlZjZmMWY5IiwidXNlcl9pZCI6OH0.rnfXt8dezp3C18IXtBduObFIxdjNWM2cdot9EUlGdf4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Sample Audio",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Sample audio file",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/nandh/Downloads/sample-15s.mp3"
+								},
+								{
+									"key": "audio_type",
+									"value": "mp3",
+									"type": "text"
+								},
+								{
+									"key": "is_generic",
+									"value": "True",
+									"type": "text"
+								},
+								{
+									"key": "is_active",
+									"value": "True",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/audio/edit/1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"audio",
+								"edit",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Audio",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MTkyMzA5LCJpYXQiOjE3MzcxOTExMDksImp0aSI6ImNiMGNmYmM2NjUxOTQ2ZGRhOTJiZWVmYTVlZjZmMWY5IiwidXNlcl9pZCI6OH0.rnfXt8dezp3C18IXtBduObFIxdjNWM2cdot9EUlGdf4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"audio_id\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/audio/delete/1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"audio",
+								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Play One Audio",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NTk5OTUyLCJpYXQiOjE3Mzc1OTg3NTIsImp0aSI6ImFhOWQ3YzVkYjVmZTRjZmI4ZDRiMTEyOTkyMmYyNDhjIiwidXNlcl9pZCI6OH0.XsbZXRQbJ0bHUuJrkjNAAhJ2UnLCYqgqtYS-3sCqqag",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"file_path\": \"audio/d26c6f7a-0742-459a-9578-25aef0915a69.mp3\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.0.135:8000/api/voice/audio/play",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"0",
+								"135"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"audio",
+								"play"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All files from userid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MTkyMzA5LCJpYXQiOjE3MzcxOTExMDksImp0aSI6ImNiMGNmYmM2NjUxOTQ2ZGRhOTJiZWVmYTVlZjZmMWY5IiwidXNlcl9pZCI6OH0.rnfXt8dezp3C18IXtBduObFIxdjNWM2cdot9EUlGdf4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/audio/all/9",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"audio",
+								"all",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8000/api/voice/transcribe",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/project/Native react/Letscalm backend/letsclamapp/audio_files/audio_45rzAFF.wav"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/voice/transcribe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"transcribe"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

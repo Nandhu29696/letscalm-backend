@@ -5,19 +5,19 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer
+from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer
 from django.shortcuts import get_object_or_404
-from .models import AudioFile, VoiceToText
+from .models import AudioFile, VideoFile, VoiceToText, SentimentAnalysisResult
 from django.db.models import Q
 import requests
 from django.http import StreamingHttpResponse
 from rest_framework import status, permissions
 import os
-from .utils import speech_to_text
+from .utils import speech_to_text, analyze_sentiment
 import speech_recognition as sr
 from django.core.files.storage import default_storage
 
-
+# Manage Audio files 
 class AudioFileUploadView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -143,20 +143,66 @@ class DeleteAudioView(APIView):
 
 class TranscriptionAPIView(APIView):
     parser_classes = [MultiPartParser]
-
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request, *args, **kwargs):
         if 'file' not in request.FILES:
             return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
-        print("request.FILES", request.FILES)
-        # Save the uploaded file
+        
+        user_id = request.user.id
         file = request.FILES['file']
-        audio_file = VoiceToText.objects.create(file=file)
-        return Response({"message": "File saved"}, status=status.HTTP_200_OK)    
+        audio_file = VoiceToText.objects.create(file=file, file_status="file saved")
+        
         try:
             file_path = audio_file.file.path
-            transcription = speech_to_text(file_path, 'en-US') 
-            print('transcription: ',transcription)
-            return Response({"transcription": transcription}, status=status.HTTP_200_OK)
+            transcription = analyze_sentiment(file_path)
+            
+            sentiment_analysis_result = SentimentAnalysisResult.objects.create(
+                user_id=user_id,
+                file_id=audio_file.id,
+                scores=transcription['scores'],
+                converted_text=transcription['text'],
+                sentiment=transcription['sentiment'],
+            )
+            
+            if sentiment_analysis_result.sentiment == 'neutral':
+                audio_files = AudioFile.objects.filter(created_by_id=user_id).first()
+                
+                if not audio_files:
+                    return Response({"message": "No audio files found."}, status=status.HTTP_404_NOT_FOUND)
+                audio_files = AudioFile.objects.filter(created_by_id=user_id)
+                serialized_audio_files = AudioFileSerializer(audio_files, many=True).data
+                response_data = {
+                    "data": serialized_audio_files,
+                    "sentimentStatus": sentiment_analysis_result.sentiment
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "The sentiment is not happy."}, status=status.HTTP_200_OK)
+        
         except Exception as e:
-            print('Error:', e) 
+            print(str(e))
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+#Mange Video Files
+
+class VidepFileUploadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = VideoFileUploadSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            video_file = serializer.save()
+            return Response({
+                'msg': 'Video file uploaded successfully',
+                'data': {
+                    'title': video_file.title,
+                    'description': video_file.description,
+                    'video_type': video_file.video_type,
+                    'file_url': video_file.file_url,
+                    'file_name': video_file.file_name,
+                 }
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

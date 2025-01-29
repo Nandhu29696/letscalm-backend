@@ -7,19 +7,54 @@ import os
 import speech_recognition as sr
 import audioread
 import wave
-# import assemblyai as aai
+import assemblyai as aai
 import shutil
 import soundfile as sf
 from mutagen import File
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk import download
+
 
 ALLOWED_EXTENSIONS_AUDIO = ['mp3', 'wav', 'aac']
 ALLOWED_EXTENSIONS_VIDEO = ['mp4', 'mkv', 'avi']
+
+aai.settings.api_key = "17fd74a864f0411fa70c349b1ba66d8b" 
+
+# Download VADER lexicon
+download('vader_lexicon')
 
 def is_allowed_file(file_name, allowed_extensions):
     """Check if the file has an allowed extension."""
     extension = file_name.split('.')[-1].lower()
     return extension in allowed_extensions
 
+def transcribe_speech(audio_file):
+    transcriber = aai.Transcriber()
+    config = aai.TranscriptionConfig(speaker_labels=True)
+    transcript = transcriber.transcribe(audio_file, config)
+    if transcript.status == aai.TranscriptStatus.error:
+        print(f"Transcription failed: {transcript.error}")
+        exit(1)
+    return transcript.text
+
+def analyze_sentiment(audio_file):
+    analyzer = SentimentIntensityAnalyzer()
+    text = transcribe_speech(audio_file)
+    sentiment_scores = analyzer.polarity_scores(text)
+
+    if sentiment_scores['compound'] >= 0.05:
+        sentiment = 'happy'
+    elif sentiment_scores['compound'] <= -0.05:
+        sentiment = 'sad'
+    else:
+        sentiment = 'neutral'
+
+    return {
+        'text': text,
+        'sentiment': sentiment,
+        'scores': sentiment_scores
+    }
+    
 # def upload_to_s3(file):
 #     s3_client = boto3.client(
 #         's3',

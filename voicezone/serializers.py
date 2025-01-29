@@ -1,7 +1,7 @@
 #serializers
 
 from rest_framework import serializers
-from .models import AudioFile
+from .models import AudioFile, VideoFile
 from voicezone.utils import upload_to_local  # Import the utility function
 
 class AudioFileUploadSerializer(serializers.Serializer):
@@ -60,3 +60,37 @@ class AudioFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = AudioFile
         fields = ['id', 'title', 'description', 'audio_type', 'file_name', 'file_url', 'is_generic', 'created_at', 'modified_at']
+        
+        
+        
+class VideoFileUploadSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=255)
+    description = serializers.CharField(required=False, allow_blank=True)
+    video_type = serializers.ChoiceField(choices=VideoFile.VIDEO_TYPES)
+    file = serializers.FileField()
+
+    def create(self, validated_data):
+        title = validated_data['title']
+        description = validated_data['description']
+        video_type = validated_data['video_type']
+        file = validated_data['file']
+        created_by = self.context['request'].user
+        file_url, file_name = upload_to_local(file)
+
+        if file_url is None:
+            raise serializers.ValidationError("Failed to upload file to S3")
+
+        video_file = VideoFile.objects.create(
+            title=title,
+            description=description,
+            video_type=video_type,
+            file_name=file_name,
+            file_url=file_url,
+            created_by=created_by 
+        )
+        return video_file
+    
+    def update(self, instance, validated_data):
+        if 'created_by' in validated_data:
+            validated_data.pop('created_by') 
+        return super().update(instance, validated_data)
