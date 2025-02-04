@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer
+from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer, VideoFileSerializer, PlayVideoSerializer
 from django.shortcuts import get_object_or_404
 from .models import AudioFile, VideoFile, VoiceToText, SentimentAnalysisResult
 from django.db.models import Q
@@ -13,7 +13,7 @@ import requests
 from django.http import StreamingHttpResponse
 from rest_framework import status, permissions
 import os
-from .utils import speech_to_text, analyze_sentiment
+from .utils import analyze_sentiment
 import speech_recognition as sr
 from django.core.files.storage import default_storage
 
@@ -95,7 +95,7 @@ class PlayAudioView(APIView):
 class EditAudioView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request, audio_id, *args, **kwargs):
+    def put(self, request, audio_id, *args, **kwargs):
         try:
             # Fetch the audio file by ID
             audio_file = AudioFile.objects.get(id=audio_id, created_by=request.user)
@@ -155,8 +155,12 @@ class TranscriptionAPIView(APIView):
         
         try:
             file_path = audio_file.file.path
+            # transcription = ''
             transcription = analyze_sentiment(file_path)
+            if not transcription:
+                return Response({"error": "Failed to transcribe the audio file."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
+            # return Response({"transcription": transcription}, status=status.HTTP_200_OK)
             sentiment_analysis_result = SentimentAnalysisResult.objects.create(
                 user_id=user_id,
                 file_id=audio_file.id,
@@ -165,7 +169,7 @@ class TranscriptionAPIView(APIView):
                 sentiment=transcription['sentiment'],
             )
             
-            if sentiment_analysis_result.sentiment == 'neutral':
+            if sentiment_analysis_result.sentiment:
                 audio_files = AudioFile.objects.filter(created_by_id=user_id).first()
                 
                 if not audio_files:
@@ -174,35 +178,108 @@ class TranscriptionAPIView(APIView):
                 serialized_audio_files = AudioFileSerializer(audio_files, many=True).data
                 response_data = {
                     "data": serialized_audio_files,
-                    "sentimentStatus": sentiment_analysis_result.sentiment
+                    "sentimentStatus": sentiment_analysis_result.sentiment,
+                    "converted_text": sentiment_analysis_result.converted_text
                 }
                 return Response(response_data, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "The sentiment is not happy."}, status=status.HTTP_200_OK)
+                response_data = {
+                    "sentimentStatus": sentiment_analysis_result.sentiment,
+                    "converted_text": sentiment_analysis_result.converted_text
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
         
         except Exception as e:
-            print(str(e))
+            print(f"Error in transcription: {e}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 #Mange Video Files
-
 class VidepFileUploadView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = VideoFileUploadSerializer(data=request.data, context={'request': request})
+        try:    
+            if serializer.is_valid():
+                video_file = serializer.save()
+                return Response({
+                    'msg': 'Video file uploaded successfully',
+                    'data': {
+                        'title': video_file.title,
+                        'description': video_file.description,
+                        'video_type': video_file.video_type,
+                        'file_url': video_file.file_url,
+                        'file_name': video_file.file_name,
+                    }
+                }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(str(e))
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class GetAllVideoFilesView(APIView):
+    permission_classes = [IsAuthenticated]
 
-        if serializer.is_valid():
-            video_file = serializer.save()
-            return Response({
-                'msg': 'Video file uploaded successfully',
-                'data': {
-                    'title': video_file.title,
-                    'description': video_file.description,
-                    'video_type': video_file.video_type,
-                    'file_url': video_file.file_url,
-                    'file_name': video_file.file_name,
-                 }
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, *args, **kwargs):
+        try:
+            user_id = request.user.id
+            video_files = VideoFile.objects.filter(created_by_id=user_id)
+            if not video_files.exists():
+                return Response({"message": "No video files found."}, status=status.HTTP_404_NOT_FOUND)
+            serializer = VideoFileSerializer(video_files, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class PlayVideoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = PlayVideoSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        file_path = serializer.validated_data['file_path']
+        # lambda_url =  os.environ.get('AWS_LAMBDA_URL_DOWNLOAD_FILE')
+        base_dir = os.path.join(os.getcwd(), "local_storage")
+        full_file_path = os.path.join(base_dir, file_path)
+        if not os.path.exists(full_file_path):
+            return Response({"error": "Video file not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            def file_iterator(file_name, chunk_size=8192):
+                with open(file_name, "rb") as file:
+                    while chunk := file.read(chunk_size):
+                        yield chunk
+
+            response = StreamingHttpResponse(
+                file_iterator(full_file_path),
+                content_type="video/mp4"  # You can adjust this based on the file type
+            )
+            response["Content-Disposition"] = f"inline; filename={os.path.basename(file_path)}"
+            return response
+        
+            # Play audio from s3 bucket using lambda_url
+            # lambda_response = requests.post(lambda_url, json={"file_path": file_path})
+            # if lambda_response.status_code != 200 or "download_url" not in lambda_response.json():
+            #     return Response({"error": "Failed to fetch presigned URL."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # presigned_url = lambda_response.json()["download_url"]
+
+            # # Step 2: Stream the audio from the presigned URL
+            # audio_response = requests.get(presigned_url, stream=True)
+
+            # if audio_response.status_code != 200:
+            #     return Response({"error": "Failed to fetch audio file."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            
+            # # Step 3: Stream the audio file in the response
+            # response = StreamingHttpResponse(
+            #     audio_response.iter_content(chunk_size=8192),
+            #     content_type=audio_response.headers.get("Content-Type", "audio/mpeg")
+            # )
+            # response["Content-Disposition"] = f"inline; filename={file_path.split('/')[-1]}"
+            # return response
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

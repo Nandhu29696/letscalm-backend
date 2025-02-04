@@ -49,7 +49,7 @@ class PlayAudioSerializer(serializers.Serializer):
 class EditAudioSerializer(serializers.ModelSerializer):
     class Meta:
         model = AudioFile
-        fields = ['title', 'description', 'audio_type', 'is_generic']
+        fields = ['title', 'description', 'audio_type', 'file_name', 'file_url', 'is_generic']
 
     def validate_audio_type(self, value):
         if value not in dict(AudioFile.AUDIO_TYPES):
@@ -94,3 +94,16 @@ class VideoFileUploadSerializer(serializers.Serializer):
         if 'created_by' in validated_data:
             validated_data.pop('created_by') 
         return super().update(instance, validated_data)
+
+class VideoFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoFile
+        fields = ['id', 'title', 'description', 'video_type', 'file_name', 'file_url', 'is_generic', 'created_at', 'modified_at']
+        
+class PlayVideoSerializer(serializers.Serializer):
+    file_path = serializers.CharField(required=True)
+
+    def validate_file_path(self, value):
+        if not value:
+            raise serializers.ValidationError("File path is required.")
+        return value

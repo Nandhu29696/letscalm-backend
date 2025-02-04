@@ -1,2 +1,4 @@
 .env
 logs
+/local_storage
+/audio_files

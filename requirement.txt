@@ -34,7 +34,7 @@ httpx==0.28.1
 idna==3.10
 jmespath==1.0.1
 mutagen==1.47.0
-numpy==2.2.2
+numpy==2.1.0
 pocketsphinx==5.0.4
 proto-plus==1.25.0
 protobuf==5.29.3
