@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import AudioFile, VideoFile, SentimentAnalysisResult
+from .models import AudioFile, VideoFile, SentimentAnalysisResult, SentimentTypes
 
 class AudioFileAdmin(admin.ModelAdmin):
-    list_display = ('title', 'audio_type', 'file_name', 'file_url', 'is_generic', 'is_active', 'created_by', 'created_at', 'modified_at')
+    list_display = ('title', 'audio_type', 'file_name', 'file_url', 'sentiment_type', 'is_generic', 'is_active', 'created_by', 'created_at', 'modified_at')
     list_filter = ('audio_type', 'is_generic', 'created_by')
     search_fields = ('title', 'file_name', 'file_url', 'description')
     ordering = ('-created_at',)
@@ -21,7 +21,14 @@ class SentimentAnalysisAdmin(admin.ModelAdmin):
     search_fields = ('file_id', 'converted_text', 'user__username')
     ordering = ('-created_at',)
     
+class SentimentTypesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'sentiment_type','is_active', 'user', 'created_at')
+    list_filter = ('created_at', 'user')
+    search_fields = ('sentiment_type', 'user__username')
+    ordering = ('-created_at',)
+    
 # Register the models with the admin site
 admin.site.register(AudioFile, AudioFileAdmin)
 admin.site.register(VideoFile, VideoFileAdmin)
 admin.site.register(SentimentAnalysisResult, SentimentAnalysisAdmin)
+admin.site.register(SentimentTypes, SentimentTypesAdmin)

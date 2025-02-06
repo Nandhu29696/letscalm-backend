@@ -1,17 +1,19 @@
 #serializers
 
 from rest_framework import serializers
-from .models import AudioFile, VideoFile
+from .models import AudioFile, VideoFile, SentimentTypes
 from voicezone.utils import upload_to_local  # Import the utility function
 
 class AudioFileUploadSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
+    sentiment_type = serializers.CharField(max_length=255)
     description = serializers.CharField(required=False, allow_blank=True)
     audio_type = serializers.ChoiceField(choices=AudioFile.AUDIO_TYPES)
     file = serializers.FileField()
 
     def create(self, validated_data):
         title = validated_data['title']
+        sentiment_type = validated_data['sentiment_type']
         description = validated_data['description']
         audio_type = validated_data['audio_type']
         file = validated_data['file']
@@ -29,6 +31,7 @@ class AudioFileUploadSerializer(serializers.Serializer):
             audio_type=audio_type,
             file_name=file_name,
             file_url=file_url,
+            sentiment_type=sentiment_type,
             created_by=created_by 
         )
         return audio_file
@@ -49,7 +52,7 @@ class PlayAudioSerializer(serializers.Serializer):
 class EditAudioSerializer(serializers.ModelSerializer):
     class Meta:
         model = AudioFile
-        fields = ['title', 'description', 'audio_type', 'file_name', 'file_url', 'is_generic']
+        fields = ['title', 'description', 'audio_type', 'is_generic','sentiment_type']
 
     def validate_audio_type(self, value):
         if value not in dict(AudioFile.AUDIO_TYPES):
@@ -59,7 +62,7 @@ class EditAudioSerializer(serializers.ModelSerializer):
 class AudioFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = AudioFile
-        fields = ['id', 'title', 'description', 'audio_type', 'file_name', 'file_url', 'is_generic', 'created_at', 'modified_at']
+        fields = ['id', 'title', 'description', 'audio_type', 'file_name', 'file_url', 'is_generic', 'sentiment_type','created_at', 'modified_at']
         
         
         
@@ -107,3 +110,23 @@ class PlayVideoSerializer(serializers.Serializer):
         if not value:
             raise serializers.ValidationError("File path is required.")
         return value
+    
+class SentimentTypeSerializer(serializers.Serializer):
+    sentiment_type = serializers.CharField(max_length=255)
+    
+    def create(self, validated_data):
+        sentiment_type = validated_data['sentiment_type']
+        user = self.context['request'].user
+        
+        # Save the metadata to the database
+        sentiment_data = SentimentTypes.objects.create(
+            sentiment_type=sentiment_type,
+            user=user 
+        )
+        return sentiment_data
+    
+class SentimentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SentimentTypes
+        fields = ['id', 'sentiment_type', 'is_active', 'created_at']
+    

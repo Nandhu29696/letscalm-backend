@@ -23,6 +23,7 @@ class Migration(migrations.Migration):
                 ('audio_type', models.CharField(choices=[('mp3', 'MP3'), ('wav', 'WAV'), ('aac', 'AAC')], max_length=10)),
                 ('file_name', models.CharField(max_length=255)),
                 ('file_url', models.URLField(max_length=500)),
+                ('sentiment_type', models.CharField(max_length=255)),
                 ('is_generic', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('modified_at', models.DateTimeField(auto_now=True)),

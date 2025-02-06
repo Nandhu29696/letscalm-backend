@@ -16,6 +16,7 @@ class AudioFile(models.Model):
     audio_type = models.CharField(max_length=10, choices=AUDIO_TYPES)
     file_name = models.CharField(max_length=255)
     file_url = models.URLField(max_length=500)
+    sentiment_type = models.CharField(max_length=255)
     is_generic = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -60,3 +61,9 @@ class SentimentAnalysisResult(models.Model):
     converted_text = models.TextField(help_text="Text transcribed from the audio file")
     sentiment = models.CharField(max_length=20, help_text="Overall sentiment (e.g., happy, sad, neutral)")
     created_at = models.DateTimeField(auto_now_add=True)
+
+class SentimentTypes(models.Model):
+    sentiment_type = models.CharField(max_length=255, help_text="Overall sentiment (e.g., happy, sad, neutral)")
+    is_active = models.BooleanField(default=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True) 

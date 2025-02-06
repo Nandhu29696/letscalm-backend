@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer, VideoFileSerializer, PlayVideoSerializer
+from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer, VideoFileSerializer, PlayVideoSerializer, SentimentTypeSerializer,SentimentSerializer
 from django.shortcuts import get_object_or_404
-from .models import AudioFile, VideoFile, VoiceToText, SentimentAnalysisResult
+from .models import AudioFile, VideoFile, VoiceToText, SentimentAnalysisResult, SentimentTypes
 from django.db.models import Q
 import requests
 from django.http import StreamingHttpResponse
@@ -170,7 +170,9 @@ class TranscriptionAPIView(APIView):
             )
             
             if sentiment_analysis_result.sentiment:
-                audio_files = AudioFile.objects.filter(created_by_id=user_id).first()
+                audio_files = AudioFile.objects.filter(
+                        Q(created_by_id=user_id) & Q(sentiment_type__icontains=sentiment_analysis_result.sentiment)
+                    ).first()
                 
                 if not audio_files:
                     return Response({"message": "No audio files found."}, status=status.HTTP_404_NOT_FOUND)
@@ -283,3 +285,34 @@ class PlayVideoView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+
+#Manage Sentiment types
+
+class SentimentTypesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = SentimentTypeSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            sentiment_data = serializer.save()  # The file is uploaded and metadata is saved here
+            return Response({
+                'msg': 'Sentiment type added successfully' }, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class getSentimentTypes(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            user_id = request.user.id
+            sentiment_types = SentimentTypes.objects.all()
+            if not sentiment_types.exists():
+                return Response({"message": "No data found."}, status=status.HTTP_404_NOT_FOUND)
+            serializer = SentimentSerializer(sentiment_types, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
