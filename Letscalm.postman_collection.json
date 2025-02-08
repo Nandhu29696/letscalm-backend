@@ -122,7 +122,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MDQ5OTY0LCJpYXQiOjE3MzcwNDg3NjQsImp0aSI6IjM4ZjM1YzQ3OGI3NTQ2NmM4MGY5NDU5ZGU4YjZkZjYzIiwidXNlcl9pZCI6Mn0._HVRHjqIwISj3ORC76JK0ixd_2JJbLoemflQvpl8_Sw",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MjA5ODU0LCJpYXQiOjE3MzgyMDg2NTQsImp0aSI6ImJhYWY2ZDAxODQwMzQ2OTlhY2Y4NjEwMzk4OGJlNTQ4IiwidXNlcl9pZCI6OH0.5y2FQVuw3lkpnFvU1PP7WjjIBTtaoEVURJdqX2IlIsw",
 								"type": "text"
 							}
 						],
@@ -277,7 +277,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NTk5OTUyLCJpYXQiOjE3Mzc1OTg3NTIsImp0aSI6ImFhOWQ3YzVkYjVmZTRjZmI4ZDRiMTEyOTkyMmYyNDhjIiwidXNlcl9pZCI6OH0.XsbZXRQbJ0bHUuJrkjNAAhJ2UnLCYqgqtYS-3sCqqag",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MTY1MzgwLCJpYXQiOjE3MzgxNjQxODAsImp0aSI6ImNkZWE5YzcxMjE1NjRiOTU5NzljZWFkNzEzZDlhMWQzIiwidXNlcl9pZCI6OH0._K7TZmIbL1eLxTQ2fJLA1zpRwJWkRBr_RiijQ_tye0g",
 								"type": "text"
 							}
 						],
@@ -297,7 +297,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/C:/Users/nandh/Downloads/sample-12s.mp3"
+									"src": []
 								},
 								{
 									"key": "audio_type",
@@ -307,7 +307,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/api/voice/upload-audio",
+							"raw": "http://127.0.0.1:8000/api/voice/upload-video",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -319,7 +319,7 @@
 							"path": [
 								"api",
 								"voice",
-								"upload-audio"
+								"upload-video"
 							]
 						}
 					},
@@ -440,13 +440,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NTk5OTUyLCJpYXQiOjE3Mzc1OTg3NTIsImp0aSI6ImFhOWQ3YzVkYjVmZTRjZmI4ZDRiMTEyOTkyMmYyNDhjIiwidXNlcl9pZCI6OH0.XsbZXRQbJ0bHUuJrkjNAAhJ2UnLCYqgqtYS-3sCqqag",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MjA2NjM5LCJpYXQiOjE3MzgyMDU0MzksImp0aSI6ImVlOTFjNDVhZjFkMDQ3MDU5ZmUwNzY3ZjY0MmU2MDAxIiwidXNlcl9pZCI6OH0.jiVl7CNN3EtC-c10WIYRVRbFBJ14koFGnZComatTwH0",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"file_path\": \"audio/d26c6f7a-0742-459a-9578-25aef0915a69.mp3\"\r\n}\r\n",
+							"raw": "{\r\n  \"file_path\": \"video/5b6b7a3b-8e4e-4da9-9099-c165a1c9a924.mp4\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -454,7 +454,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://192.168.0.135:8000/api/voice/audio/play",
+							"raw": "http://192.168.0.135:8000/api/voice/video/play",
 							"protocol": "http",
 							"host": [
 								"192",
@@ -466,7 +466,7 @@
 							"path": [
 								"api",
 								"voice",
-								"audio",
+								"video",
 								"play"
 							],
 							"query": [
@@ -513,7 +513,39 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:8000/api/voice/transcribe",
+					"name": "Get All transcribe audios",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3MTkyMzA5LCJpYXQiOjE3MzcxOTExMDksImp0aSI6ImNiMGNmYmM2NjUxOTQ2ZGRhOTJiZWVmYTVlZjZmMWY5IiwidXNlcl9pZCI6OH0.rnfXt8dezp3C18IXtBduObFIxdjNWM2cdot9EUlGdf4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/audio/all/9",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"audio",
+								"all",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transcribe Audio",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -526,7 +558,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/D:/project/Native react/Letscalm backend/letsclamapp/audio_files/audio_45rzAFF.wav"
+									"src": "/D:/project/Native react/Audio-Sentiment-Analysis-master/Audio-Sentiment-Analysis-master/input/test.wav"
 								}
 							]
 						},
@@ -541,6 +573,103 @@
 								"api",
 								"voice",
 								"transcribe"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sentiment types",
+			"item": [
+				{
+					"name": "add",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MTY1MzgwLCJpYXQiOjE3MzgxNjQxODAsImp0aSI6ImNkZWE5YzcxMjE1NjRiOTU5NzljZWFkNzEzZDlhMWQzIiwidXNlcl9pZCI6OH0._K7TZmIbL1eLxTQ2fJLA1zpRwJWkRBr_RiijQ_tye0g",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Sample Audio",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a sample audio file",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "audio_type",
+									"value": "mp3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/upload-video",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"upload-video"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4ODA5OTA4LCJpYXQiOjE3Mzg4MDg3MDgsImp0aSI6IjRiY2MyZWE1ZGE5NzQ4YTRiMmVmOTAyM2MzMjEzZTgyIiwidXNlcl9pZCI6OH0.yj1ejEqi8E_7DFoCSO1KPO32JPbOvxCJ73FzSz_-wd8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/voice/getsentimenttypes",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"voice",
+								"getsentimenttypes"
 							]
 						}
 					},

@@ -16,7 +16,7 @@ class VideoFileAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 class SentimentAnalysisAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'file_id', 'created_at')
+    list_display = ('id', 'user','scores','converted_text','sentiment', 'file_id', 'created_at')
     list_filter = ('created_at', 'user')
     search_fields = ('file_id', 'converted_text', 'user__username')
     ordering = ('-created_at',)

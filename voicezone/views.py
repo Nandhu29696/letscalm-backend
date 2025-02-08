@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer, VideoFileSerializer, PlayVideoSerializer, SentimentTypeSerializer,SentimentSerializer
+from .serializers import AudioFileUploadSerializer, PlayAudioSerializer, EditAudioSerializer, AudioFileSerializer, VideoFileUploadSerializer, VideoFileSerializer, PlayVideoSerializer, SentimentTypeSerializer,SentimentSerializer,SentimentDataSerializer
 from django.shortcuts import get_object_or_404
 from .models import AudioFile, VideoFile, VoiceToText, SentimentAnalysisResult, SentimentTypes
 from django.db.models import Q
@@ -15,8 +15,7 @@ from rest_framework import status, permissions
 import os
 from .utils import analyze_sentiment
 import speech_recognition as sr
-from django.core.files.storage import default_storage
-
+ 
 # Manage Audio files 
 class AudioFileUploadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -36,7 +35,6 @@ class AudioFileUploadView(APIView):
                     'file_name': audio_file.file_name,
                  }
             }, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PlayAudioView(APIView):
@@ -48,48 +46,53 @@ class PlayAudioView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         file_path = serializer.validated_data['file_path']
-        # lambda_url =  os.environ.get('AWS_LAMBDA_URL_DOWNLOAD_FILE')
-        base_dir = os.path.join(os.getcwd(), "local_storage")
-        full_file_path = os.path.join(base_dir, file_path)
-        if not os.path.exists(full_file_path):
-            return Response({"error": "Audio file not found."}, status=status.HTTP_404_NOT_FOUND)
+        upload_type = os.environ.get('STORAGE_TYPE')
 
         try:
-            def file_iterator(file_name, chunk_size=8192):
-                with open(file_name, "rb") as file:
-                    while chunk := file.read(chunk_size):
-                        yield chunk
+            if upload_type == 's3':
+                # Play audio from S3 bucket using Lambda
+                lambda_url = os.environ.get('AWS_LAMBDA_URL_DOWNLOAD_FILE')
+                lambda_response = requests.post(lambda_url, json={"file_path": file_path})
+                if lambda_response.status_code != 200 or "download_url" not in lambda_response.json():
+                    return Response({"error": "Failed to fetch presigned URL."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            response = StreamingHttpResponse(
-                file_iterator(full_file_path),
-                content_type="audio/mpeg"  # You can adjust this based on the file type
-            )
-            response["Content-Disposition"] = f"inline; filename={os.path.basename(file_path)}"
-            return response
-        
-            # Play audio from s3 bucket using lambda_url
-            # lambda_response = requests.post(lambda_url, json={"file_path": file_path})
-            # if lambda_response.status_code != 200 or "download_url" not in lambda_response.json():
-            #     return Response({"error": "Failed to fetch presigned URL."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                presigned_url = lambda_response.json()["download_url"]
+                
+                # Stream the audio from the presigned URL
+                audio_response = requests.get(presigned_url, stream=True)
+                if audio_response.status_code != 200:
+                    return Response({"error": "Failed to fetch audio file."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # presigned_url = lambda_response.json()["download_url"]
+                response = StreamingHttpResponse(
+                    audio_response.iter_content(chunk_size=8192),
+                    content_type=audio_response.headers.get("Content-Type", "audio/mpeg")
+                )
+                response["Content-Disposition"] = f"inline; filename={file_path.split('/')[-1]}"
+                return response
 
-            # # Step 2: Stream the audio from the presigned URL
-            # audio_response = requests.get(presigned_url, stream=True)
+            else:
+                # Play audio from local storage
+                base_dir = os.path.join(os.getcwd(), "local_storage")
+                full_file_path = os.path.join(base_dir, file_path)
 
-            # if audio_response.status_code != 200:
-            #     return Response({"error": "Failed to fetch audio file."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                if not os.path.exists(full_file_path):
+                    return Response({"error": "Audio file not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            
-            # # Step 3: Stream the audio file in the response
-            # response = StreamingHttpResponse(
-            #     audio_response.iter_content(chunk_size=8192),
-            #     content_type=audio_response.headers.get("Content-Type", "audio/mpeg")
-            # )
-            # response["Content-Disposition"] = f"inline; filename={file_path.split('/')[-1]}"
-            # return response
+                # Stream audio from local file
+                def file_iterator(file_name, chunk_size=8192):
+                    with open(file_name, "rb") as file:
+                        while chunk := file.read(chunk_size):
+                            yield chunk
+
+                response = StreamingHttpResponse(
+                    file_iterator(full_file_path),
+                    content_type="audio/mpeg"
+                )
+                response["Content-Disposition"] = f"inline; filename={os.path.basename(file_path)}"
+                return response
 
         except Exception as e:
+            print("error", str(e))
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class EditAudioView(APIView):
@@ -287,9 +290,23 @@ class PlayVideoView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         
+#Manage Sentiement results
+class GetAllSentimentsdataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            user_id = request.user.id
+            sentiment_data = SentimentAnalysisResult.objects.filter(user_id=user_id)
+            if not sentiment_data.exists():
+                return Response({"message": "No data found."}, status=status.HTTP_404_NOT_FOUND)
+            serializer = SentimentDataSerializer(sentiment_data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 #Manage Sentiment types
-
 class SentimentTypesView(APIView):
     permission_classes = [IsAuthenticated]
 

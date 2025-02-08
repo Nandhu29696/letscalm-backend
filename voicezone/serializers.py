@@ -1,8 +1,18 @@
 #serializers
 
 from rest_framework import serializers
-from .models import AudioFile, VideoFile, SentimentTypes
-from voicezone.utils import upload_to_local  # Import the utility function
+from .models import AudioFile, VideoFile, SentimentTypes, SentimentAnalysisResult
+from voicezone.utils import upload_to_s3, upload_to_local  
+import os
+
+def handle_file_upload(file):
+    upload_type = os.environ.get('STORAGE_TYPE')
+    if upload_type == 's3':
+        file_url, file_name = upload_to_s3(file)
+    else:
+        file_url, file_name = upload_to_local(file)
+
+    return file_url, file_name
 
 class AudioFileUploadSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
@@ -19,7 +29,7 @@ class AudioFileUploadSerializer(serializers.Serializer):
         file = validated_data['file']
         created_by = self.context['request'].user
         # Upload file to S3 and get the file URL and name
-        file_url, file_name = upload_to_local(file)
+        file_url, file_name = handle_file_upload(file)
 
         if file_url is None:
             raise serializers.ValidationError("Failed to upload file to S3")
@@ -64,21 +74,21 @@ class AudioFileSerializer(serializers.ModelSerializer):
         model = AudioFile
         fields = ['id', 'title', 'description', 'audio_type', 'file_name', 'file_url', 'is_generic', 'sentiment_type','created_at', 'modified_at']
         
-        
-        
 class VideoFileUploadSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     description = serializers.CharField(required=False, allow_blank=True)
     video_type = serializers.ChoiceField(choices=VideoFile.VIDEO_TYPES)
+    sentiment_type = serializers.CharField(max_length=255)
     file = serializers.FileField()
 
     def create(self, validated_data):
         title = validated_data['title']
+        sentiment_type = validated_data['sentiment_type']
         description = validated_data['description']
         video_type = validated_data['video_type']
         file = validated_data['file']
         created_by = self.context['request'].user
-        file_url, file_name = upload_to_local(file)
+        file_url, file_name = upload_to_s3(file)
 
         if file_url is None:
             raise serializers.ValidationError("Failed to upload file to S3")
@@ -89,6 +99,7 @@ class VideoFileUploadSerializer(serializers.Serializer):
             video_type=video_type,
             file_name=file_name,
             file_url=file_url,
+            sentiment_type=sentiment_type,
             created_by=created_by 
         )
         return video_file
@@ -101,7 +112,7 @@ class VideoFileUploadSerializer(serializers.Serializer):
 class VideoFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = VideoFile
-        fields = ['id', 'title', 'description', 'video_type', 'file_name', 'file_url', 'is_generic', 'created_at', 'modified_at']
+        fields = ['id', 'title', 'description', 'video_type','sentiment_type', 'file_name', 'file_url', 'is_generic', 'created_at', 'modified_at']
         
 class PlayVideoSerializer(serializers.Serializer):
     file_path = serializers.CharField(required=True)
@@ -129,4 +140,10 @@ class SentimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SentimentTypes
         fields = ['id', 'sentiment_type', 'is_active', 'created_at']
-    
+
+class SentimentDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SentimentAnalysisResult
+        fields = ['id', 'file_id', 'scores', 'converted_text', 'sentiment','created_at']
+        
+        

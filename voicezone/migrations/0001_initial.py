@@ -39,6 +39,7 @@ class Migration(migrations.Migration):
                 ('video_type', models.CharField(choices=[('mp4', 'MP4'), ('mkv', 'MKV'), ('avi', 'AVI')], max_length=10)),
                 ('file_name', models.CharField(max_length=255)),
                 ('file_url', models.URLField(max_length=500)),
+                ('sentiment_type', models.CharField(max_length=255)),
                 ('is_generic', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('modified_at', models.DateTimeField(auto_now=True)),

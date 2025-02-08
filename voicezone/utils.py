@@ -87,7 +87,7 @@ def analyze_sentiment(audio_file):
         'scores': sentiment_scores
     }
     
-# def upload_to_s3(file):
+def upload_to_s3(file):
     s3_client = boto3.client(
         's3',
         aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
@@ -126,7 +126,7 @@ def analyze_sentiment(audio_file):
 def upload_to_local(file):
     base_dir = os.path.join(os.getcwd(), "local_storage")
     os.makedirs(base_dir, exist_ok=True) 
-    
+     
     file_extension = file.name.split('.')[-1].lower()
     if file_extension in ['mp3', 'wav', 'aac']:  
         folder = 'audio'

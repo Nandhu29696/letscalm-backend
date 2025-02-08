@@ -14,5 +14,15 @@ python manage.py runserver 0.0.0.0:8000
 python manage.py makemigrations
 python manage.py migrate
 
+#create a new project
+python manage.py startapp cricket
+
 #create a super user
 python manage.py createsuperuser
+
+
+#deplyment to ec2 file
+cd branch-repo
+git pull origin branch-name
+source venu/bin/activate
+pm2 start python3 --name "django-server" -- manage.py runserver 0.0.0.0:8000
