@@ -25,4 +25,5 @@ python manage.py createsuperuser
 cd branch-repo
 git pull origin branch-name
 source venu/bin/activate
+
 pm2 start python3 --name "django-server" -- manage.py runserver 0.0.0.0:8000
