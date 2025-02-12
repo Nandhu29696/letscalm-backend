@@ -297,7 +297,7 @@ class GetAllSentimentsdataView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             user_id = request.user.id
-            sentiment_data = SentimentAnalysisResult.objects.filter(user_id=user_id)
+            sentiment_data = SentimentAnalysisResult.objects.filter(user_id=user_id).order_by('-created_at')
             if not sentiment_data.exists():
                 return Response({"message": "No data found."}, status=status.HTTP_404_NOT_FOUND)
             serializer = SentimentDataSerializer(sentiment_data, many=True)
