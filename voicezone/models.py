@@ -38,6 +38,7 @@ class VideoFile(models.Model):
     video_type = models.CharField(max_length=10, choices=VIDEO_TYPES)
     file_name = models.CharField(max_length=255)
     file_url = models.URLField(max_length=500)
+    sentiment_type = models.CharField(max_length=255)
     is_generic = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -51,6 +52,7 @@ class VoiceToText(models.Model):
     file = models.FileField(upload_to='audio_files/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     file_status = models.CharField(max_length=50, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     def __str__(self):
         return self.file.name
 

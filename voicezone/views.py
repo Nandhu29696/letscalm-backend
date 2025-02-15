@@ -154,7 +154,7 @@ class TranscriptionAPIView(APIView):
         
         user_id = request.user.id
         file = request.FILES['file']
-        audio_file = VoiceToText.objects.create(file=file, file_status="file saved")
+        audio_file = VoiceToText.objects.create( user_id=user_id, file=file, file_status="file saved")
         
         try:
             file_path = audio_file.file.path
@@ -176,11 +176,14 @@ class TranscriptionAPIView(APIView):
                 audio_files = AudioFile.objects.filter(
                         Q(created_by_id=user_id) & Q(sentiment_type__icontains=sentiment_analysis_result.sentiment)
                     ).first()
-                
                 if not audio_files:
-                    return Response({"message": "No audio files found."}, status=status.HTTP_404_NOT_FOUND)
+                    response_data = {
+                    "sentimentStatus": sentiment_analysis_result.sentiment,
+                    "message": "No audio files found."
+                    }
+                    return Response(response_data, status=status.HTTP_404_NOT_FOUND)
                 audio_files = AudioFile.objects.filter(created_by_id=user_id)
-                serialized_audio_files = AudioFileSerializer(audio_files, many=True).data
+                serialized_audio_files = AudioFileSerializer(audio_files, many=False).data
                 response_data = {
                     "data": serialized_audio_files,
                     "sentimentStatus": sentiment_analysis_result.sentiment,
