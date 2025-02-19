@@ -16,6 +16,8 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import download
 from pydub import AudioSegment
 import librosa
+import io
+import traceback
 
 
 ALLOWED_EXTENSIONS_AUDIO = ['mp3', 'wav', 'aac']
@@ -40,10 +42,61 @@ def transcribe_speech(audio_file):
         exit(1)
     return transcript.text
 
-def analyze_sentiment(audio_file):
-    analyzer = SentimentIntensityAnalyzer()
-    text = transcribe_speech(audio_file)
+def convert_to_pcm_wav(file_path):
+        """
+        Converts the input audio file to PCM WAV format with specific properties.
+        """
+        try:
+            audio_data = AudioSegment.from_file(file_path)
+            audio_data = audio_data.set_frame_rate(16000).set_channels(1).set_sample_width(2)
+
+            wav_io = io.BytesIO()
+            audio_data.export(wav_io, format="wav")
+            wav_io.seek(0)
+
+            # Debug: Save the converted audio to check manually
+            with open("converted_audio.wav", "wb") as f:
+                f.write(wav_io.getvalue())
+            print("✅ Converted audio saved as 'converted_audio.wav' for testing")
+
+            return wav_io
+
+        except Exception as e:
+            print(f"❌ Error in audio conversion: {e}")
+            return None
+
+def recognize_audio(wav_io):
+    """
+    Recognizes speech from an audio file using SpeechRecognition.
+    """
+    recognizer = sr.Recognizer()
+
+    try:
+        with sr.AudioFile(wav_io) as source:
+            recognizer.adjust_for_ambient_noise(source, duration=1)  # Reduce background noise
+            audio = recognizer.record(source)
+
+            print("🔍 Running Google Speech Recognition...")
+            text = recognizer.recognize_google(audio)
+
+            return text.strip() if text.strip() else "unrecognized"
+
+    except sr.UnknownValueError:
+        print("❌ Google Speech API could not understand the audio.")
+        return "unrecognized"
     
+    except sr.RequestError:
+        print("❌ Google Speech API is unavailable or request failed.")
+        return "Speech API unavailable"
+
+    except Exception as e:
+        print(f"❌ Error during speech recognition: {e}")
+        return "recognition_error"
+
+def analyze_sentiment(wav_io):
+    analyzer = SentimentIntensityAnalyzer()
+    text = recognize_audio(wav_io)
+    # text = transcribe_speech(wav_io)
     if not text:
         return {"text": "", "sentiment": "unrecognized", "scores": {}}
 
