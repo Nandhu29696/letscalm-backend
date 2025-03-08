@@ -179,3 +179,30 @@ SESSION_COOKIE_AGE = 604800
 CORS_ALLOW_ALL_ORIGINS = True
  
 ALLOWED_HOSTS = ['*']
+
+SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all CORS requests
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+CORS_ALLOW_CREDENTIALS = True  # If using authentication via cookies

@@ -8,7 +8,7 @@ import speech_recognition as sr
 import audioread
 import mimetypes
 import wave
-import assemblyai as aai
+# import assemblyai as aai
 import shutil
 import soundfile as sf
 from mutagen import File
@@ -23,29 +23,25 @@ import traceback
 ALLOWED_EXTENSIONS_AUDIO = ['mp3', 'wav', 'aac']
 ALLOWED_EXTENSIONS_VIDEO = ['mp4', 'mkv', 'avi']
 
-aai.settings.api_key = "17fd74a864f0411fa70c349b1ba66d8b" 
+# aai.settings.api_key = "17fd74a864f0411fa70c349b1ba66d8b" 
 
 # Download VADER lexicon
 download('vader_lexicon')
 
 def is_allowed_file(file_name, allowed_extensions):
-    """Check if the file has an allowed extension."""
     extension = file_name.split('.')[-1].lower()
     return extension in allowed_extensions
 
-def transcribe_speech(audio_file):
-    transcriber = aai.Transcriber()
-    config = aai.TranscriptionConfig(speaker_labels=True)
-    transcript = transcriber.transcribe(audio_file, config)
-    if transcript.status == aai.TranscriptStatus.error:
-        print(f"Transcription failed: {transcript.error}")
-        exit(1)
-    return transcript.text
+# def transcribe_speech(audio_file):
+#     transcriber = aai.Transcriber()
+#     config = aai.TranscriptionConfig(speaker_labels=True)
+#     transcript = transcriber.transcribe(audio_file, config)
+#     if transcript.status == aai.TranscriptStatus.error:
+#         print(f"Transcription failed: {transcript.error}")
+#         exit(1)
+#     return transcript.text
 
 def convert_to_pcm_wav(file_path):
-        """
-        Converts the input audio file to PCM WAV format with specific properties.
-        """
         try:
             audio_data = AudioSegment.from_file(file_path)
             audio_data = audio_data.set_frame_rate(16000).set_channels(1).set_sample_width(2)
@@ -66,9 +62,6 @@ def convert_to_pcm_wav(file_path):
             return None
 
 def recognize_audio(wav_io):
-    """
-    Recognizes speech from an audio file using SpeechRecognition.
-    """
     recognizer = sr.Recognizer()
 
     try:

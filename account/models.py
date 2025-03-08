@@ -6,9 +6,6 @@ from datetime import timedelta
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, tc, password=None):
-        """
-        Creates and saves a User with the given email, name, password and tc.
-        """
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -22,9 +19,6 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, tc, password=None):
-        """
-        Creates and saves a User with the given email, name, password, and tc.
-        """
         user = self.create_user(
             email,
             password=password,
@@ -58,16 +52,13 @@ class User(AbstractBaseUser):
         return self.email
 
     def has_perm(self, perm, obj=None):
-        """Does the user have a specific permission?"""
         return self.is_admin
 
     def has_module_perms(self, app_label):
-        """Does the user have permissions to view the app `app_label`?"""
         return True
 
     @property
     def is_staff(self):
-        """Is the user a member of staff?"""
         return self.is_admin
 
 class UserOTPVerification(models.Model):
@@ -84,7 +75,6 @@ class UserOTPVerification(models.Model):
         super().save(*args, **kwargs)
 
     def is_expired(self):
-        """Check if the OTP has expired."""
         return now() > self.expires_at
 
     def __str__(self):
