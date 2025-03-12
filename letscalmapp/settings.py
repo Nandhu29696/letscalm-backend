@@ -172,19 +172,18 @@ SIMPLE_JWT = {
     "JTI_CLAIM": "jti",
  }
 
-PASSWORD_RESET_TIMEOUT = 900                #900 Sec = 15 Min
+PASSWORD_RESET_TIMEOUT = 900    #900 Sec = 15 Min
 
 SESSION_COOKIE_AGE = 604800
 
 CORS_ALLOW_ALL_ORIGINS = True
- 
 ALLOWED_HOSTS = ['*']
 
-SECURE_SSL_REDIRECT = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
 
-CORS_ALLOW_ALL_ORIGINS = True  # Allow all CORS requests
+CORS_ALLOW_CREDENTIALS = False 
+SECURE_SSL_REDIRECT = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 CORS_ALLOW_METHODS = [
     "GET",
@@ -204,5 +203,3 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
-
-CORS_ALLOW_CREDENTIALS = True  # If using authentication via cookies
