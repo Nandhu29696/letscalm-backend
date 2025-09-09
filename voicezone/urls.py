@@ -6,7 +6,7 @@ urlpatterns = [
     path('audio/play', PlayAudioView.as_view(), name='audio-play'),
     path('audio/edit/<audio_id>', EditAudioView.as_view(), name='audio-edit'),
     path('audio/all/<user_id>', GetAllAudioFilesView.as_view(), name='get_all_audio_files'),
-    path('audio/delete/<audio_id>', DeleteAudioView.as_view(), name='get_all_audio_files'),
+    path('audio/delete/<audio_id>', DeleteAudioView.as_view(), name='delete_audio_file'),
     path('transcribe', TranscriptionAPIView.as_view(), name='transcribe'),
     
     path('upload-video', VidepFileUploadView.as_view(), name='upload-video'),

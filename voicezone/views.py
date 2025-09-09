@@ -290,8 +290,7 @@ class PlayVideoView(APIView):
         except Exception as e:
             print("error", str(e))
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-        
+          
 #Manage Sentiement results
 class GetAllSentimentsdataView(APIView):
     permission_classes = [IsAuthenticated]
@@ -306,7 +305,6 @@ class GetAllSentimentsdataView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 #Manage Sentiment types
 class SentimentTypesView(APIView):
