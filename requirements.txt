@@ -4,7 +4,6 @@ annotated-types==0.7.0
 anyio==4.8.0
 asgiref==3.8.1
 assemblyai==0.36.0
-audioop-lts==0.2.1
 audioread==3.0.1
 awscli==1.37.6
 awscrt==0.16.26

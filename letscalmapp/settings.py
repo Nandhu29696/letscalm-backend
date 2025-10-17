@@ -178,7 +178,7 @@ SESSION_COOKIE_AGE = 604800
 
 CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ['*']
-SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
+SECURE_SSL_REDIRECT = False  # Redirect HTTP to HTTPS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Prevent browsers from sending data over HTTP
