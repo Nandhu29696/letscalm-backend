@@ -74,7 +74,7 @@ class PlayAudioView(APIView):
                 # Play audio from local storage
                 base_dir = os.path.join(os.getcwd(), "local_storage")
                 full_file_path = os.path.join(base_dir, file_path)
-
+                print("full_file_path", full_file_path)
                 if not os.path.exists(full_file_path):
                     return Response({"error": "Audio file not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -121,7 +121,7 @@ class GetAllAudioFilesView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             user_id = request.user.id
-            audio_files = AudioFile.objects.filter(created_by_id=user_id)
+            audio_files = AudioFile.objects.filter(created_by_id=user_id).order_by('-created_at')
             if not audio_files.exists():
                 return Response({"message": "No audio files found."}, status=status.HTTP_404_NOT_FOUND)
             serializer = AudioFileSerializer(audio_files, many=True)

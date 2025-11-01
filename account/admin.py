@@ -1,6 +1,7 @@
 from django.contrib import admin
 from account.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import EmailOTP
 
 class UserModelAdmin(BaseUserAdmin):
     
@@ -22,6 +23,12 @@ class UserModelAdmin(BaseUserAdmin):
     search_fields = ['email']
     ordering = ['email','id']
     filter_horizontal = []
+
+
+@admin.register(EmailOTP)
+class EmailOTPAdmin(admin.ModelAdmin):
+    list_display = ("user", "otp", "purpose", "used", "created_at", "expires_at")
+    search_fields = ("user__email", "otp")
 
 # Now register the new UserModelAdmin...
 admin.site.register(User, UserModelAdmin)

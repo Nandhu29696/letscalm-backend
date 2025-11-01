@@ -4,7 +4,6 @@ from account.models import User, UserOTPVerification
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from account.utils import Util
 import random
 from django.utils import timezone
 from datetime import timedelta
@@ -64,12 +63,23 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'password']
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField()
+    purpose = serializers.ChoiceField(choices=["register", "login"])
     
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','email','name']
         
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "name", "email", "is_active", "is_staff")
+        read_only_fields = ("is_active","is_staff")
+              
 class UserChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
     password2 = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)

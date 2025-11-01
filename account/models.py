@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils.timezone import now
 from datetime import timedelta
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -79,3 +80,23 @@ class UserOTPVerification(models.Model):
 
     def __str__(self):
         return f"OTP for {self.user.email}: {self.otp} (Expires at {self.expires_at})"
+
+class EmailOTP(models.Model):
+    PURPOSE_CHOICES = [
+        ("register", "register"),
+        ("login", "login"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_otps")
+    otp = models.CharField(max_length=10)
+    purpose = models.CharField(max_length=20, choices=PURPOSE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used = models.BooleanField(default=False)
+    expires_at = models.DateTimeField()
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+
+    def mark_used(self):
+        self.used = True
+        self.save()
